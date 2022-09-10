@@ -1,6 +1,7 @@
 # MetinFishingCV 
-A computer vision bot for the mini fishing game in metin2.
+A computer vision bot for the mini fishing game in metin2.<br>
 It uses mainly OpenCV and an Arduino to send mouse commands.
+
 ![Preview](/preview.gif)
 
 
@@ -62,7 +63,7 @@ pip install .
 
 ## Arduino Leonardo
 If you want to use the Arduino Leonardo, connect it trough a USB port and upload ```Arduino/leonardo_mouse_relay.ino```.
-Whenever executing metinfishingbot the flag ```--use_arduino``` neeeds to be passed.
+Whenever executing metinfishingbot the flag ```--use_arduino``` needs to be passed.
 
 
 ## Diferent run methods

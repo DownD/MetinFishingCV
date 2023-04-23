@@ -2,8 +2,6 @@ from typing import Tuple
 from numpy import ndarray
 import numpy as np
 import cv2
-import win32gui
-import dxcam
 from typing import Tuple
 
 
@@ -153,61 +151,3 @@ def overlay_image(back_image: ndarray, front_image: ndarray, x_offset: int, y_of
                x_offset:x_offset+front_image.shape[1]] = front_image
 
     return back_image
-
-
-# https://github.com/learncodebygaming/opencv_tutorials/blob/master/004_window_capture/windowcapture.py
-# https://github.com/ra1nty/DXcam
-class WindowCapture:
-    """
-    Class that allows to capture a window from the screen using dxcam module.
-
-    REMARKS: Currently only works on Windows with DPI at 100% and on the main screen.
-    """
-
-    def __init__(self, window_name: str):
-        """
-        Initialize the dxcame object to capture a specific window.
-
-        Args:
-            window_name (str): window name to capture.
-
-        Raises:
-            RuntimeError: If the window is not found. 
-        """
-
-        self.hwnd = win32gui.FindWindow(None, window_name)
-        if not self.hwnd:
-            raise RuntimeError(f'Window not found: {window_name}')
-
-        self.camera = dxcam.create(output_color="BGR")
-        self.monitors = get_monitors()
-
-    def get_screenshot(self) -> Tuple[ndarray, int, int]:
-        """
-        Get a screenshot of the window.
-
-        Returns:
-            Tuple[ndarray, int, int]: The image grab and it's position.
-        """
-
-        window_rect = win32gui.GetWindowRect(self.hwnd)
-
-        start_x = min(self.monitors[0].width, max(0, window_rect[0]))
-        start_y = min(self.monitors[0].height, max(0, window_rect[1]))
-        end_x = min(self.monitors[0].width, max(0, window_rect[2]))
-        end_y = min(self.monitors[0].height, max(0, window_rect[3]))
-
-        if end_x == 0 or end_y == 0:
-            return None
-
-        return self.camera.grab(region=[start_x, start_y, end_x, end_y]), start_x, start_y
-
-    @staticmethod
-    def list_window_names():
-        """
-        List all the window names that can be captured.
-        """
-        def winEnumHandler(hwnd, ctx):
-            if win32gui.IsWindowVisible(hwnd):
-                print(hex(hwnd), win32gui.GetWindowText(hwnd))
-        win32gui.EnumWindows(winEnumHandler, None)

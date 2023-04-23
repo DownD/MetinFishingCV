@@ -1,5 +1,6 @@
-dxcam #pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple dxcam
+dxcam ; os_name == 'nt'
 python-opencv
 pydirectinput
 pyserial
-pywin32
+pywin32 ; os_name == 'nt'
+mss ; os_name == 'posix'

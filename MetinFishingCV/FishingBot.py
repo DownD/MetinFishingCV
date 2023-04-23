@@ -1,10 +1,10 @@
 from typing import Callable
 import argparse
-from MetinFishingCV.cv_utils import WindowCapture
 import random
 from time import sleep
 import time
 import logging
+from MetinFishingCV.window_capture import GeneralCapture, WindowCapture
 import cv2
 from threading import Thread, Lock
 from MetinFishingCV.InteractionHandler import SerialMouseHandler, InteractionHandlerInterface, DirectInputHandler
@@ -95,12 +95,12 @@ class FishingBot:
 
             return time.time() > self.end_time
 
-    def __init__(self, window_name: str, resize_factor: float, interaction_handler: InteractionHandlerInterface, debug=False, fast=False):
+    def __init__(self, wnd_capture: WindowCapture, resize_factor: float, interaction_handler: InteractionHandlerInterface, debug=False, fast=False):
         """
         Creates a new FishingBot object
 
         Args:
-            window_name (str): Name of the window to capture
+            wnd_capture (WindowCapture): An object that captures the game window
             resize_factor (float): Factor to resize the captured image
             interaction_handler (InteractionHandlerInterface): InteractionHandler to send mouse/keyboard events to the game window
             debug (bool, optional): If should be initialize in debug. Defaults to False.
@@ -124,7 +124,7 @@ class FishingBot:
         self.__mouse_handler = interaction_handler
         self.__vision_processing = FishingVision(
             debug=debug, resize_factor=resize_factor)
-        self.__wnd_capture = WindowCapture(window_name)
+        self.__wnd_capture = wnd_capture
 
         # Switch that determines if the bot is running
         self.__run_bot = True
@@ -381,7 +381,10 @@ def main():
     else:
         mouse_keyboard_handler = DirectInputHandler()
 
-    fishing = FishingBot(window_name=args.window_name, debug=args.debug, interaction_handler=mouse_keyboard_handler,
+    cap = GeneralCapture()
+    cap.set_window_name(args.window_name)
+
+    fishing = FishingBot(wnd_capture=cap, debug=args.debug, interaction_handler=mouse_keyboard_handler,
                          resize_factor=args.resize_factor, fast=args.fast)
     fishing.run()
 

@@ -2,9 +2,11 @@ import cv2
 from typing import Tuple
 from numpy import ndarray, array
 import numpy as np
-from MetinFishingCV.cv_utils import get_image_template, detect_object_color, WindowCapture, overlay_image
+from MetinFishingCV.window_capture import GeneralCapture
+from MetinFishingCV.cv_utils import get_image_template, detect_object_color, overlay_image
 import logging
 import time
+import os
 
 _logger = logging.getLogger("FishingVision")
 
@@ -13,10 +15,9 @@ class FishingVision():
 
     """
     Class responsible for detecting the fish game window, the fish position and the circle.
-
     """
     # GAME MATCH TEMPLATE PATH
-    GAME_TEMPLATE_PATH = "resources\\template_fish_game_border.png"
+    GAME_TEMPLATE_PATH = os.path.join("resources","template_fish_game_border.png")
 
     # Match template threshold
     GAME_THRESHOLD = 0.7
@@ -52,7 +53,7 @@ class FishingVision():
         self.__resize_factor = resize_factor
         # Template to be matched
         self.__template_game: ndarray = cv2.imread(
-            self.GAME_TEMPLATE_PATH)
+            str(self.GAME_TEMPLATE_PATH))
         # Apply smoothing for better results
         self.__template_game = cv2.bilateralFilter(
             self.__template_game, 7, 85, 85)
@@ -259,19 +260,15 @@ def main():
             if not __show_preview(frame, fish_vision):
                 break
 
-        # Advance video
-        cap.set(cv2.CAP_PROP_POS_MSEC, 10000)
-
     elif args.window:
         _logger.info(f"Running tests in window {args.window}")
 
-        wnd_capture = WindowCapture(args.window)
-
-        if args.debug:
-            wnd_capture.list_window_names()
+        wnd_capture = GeneralCapture()
+        wnd_capture.set_window_name(args.window)
 
         while 1:
             frame, x, y = wnd_capture.get_screenshot()
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             if frame is not None:
                 if not __show_preview(frame, fish_vision):
                     break

@@ -1,7 +1,9 @@
-import win32gui
 import dxcam
 import numpy as np
+import win32gui
+
 from MetinFishingCV.window_capture.capture_interface import WindowCapture
+
 
 class WindowsCapture(WindowCapture):
     """
@@ -15,8 +17,7 @@ class WindowsCapture(WindowCapture):
         Initialize the dxcam object to capture a specific window.
         """
 
-        self.camera = dxcam.create(output_color="BGR")
-        self.monitors = dxcam.get_monitors()
+        self.camera = dxcam.create(output_color="BGR", output_idx=0)
         self.hwnd = None
 
     def set_window_name(self, window_name: str):
@@ -44,15 +45,7 @@ class WindowsCapture(WindowCapture):
 
         window_rect = win32gui.GetWindowRect(self.hwnd)
 
-        start_x = min(self.monitors[0].width, max(0, window_rect[0]))
-        start_y = min(self.monitors[0].height, max(0, window_rect[1]))
-        end_x = min(self.monitors[0].width, max(0, window_rect[2]))
-        end_y = min(self.monitors[0].height, max(0, window_rect[3]))
-
-        if end_x == 0 or end_y == 0:
-            return None
-
-        return self.camera.grab(region=[start_x, start_y, end_x, end_y]), start_x, start_y
+        return self.camera.grab(region=window_rect), window_rect[0], window_rect[1]
 
     def list_window_names(self):
         """
